@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 
 const GALLERY_IMAGES = [
-  { src: "/images/foto1.jpg", alt: "Panadería Maico" },
-  { src: "/images/foto2.jpg", alt: "Nuestros productos" },
-  { src: "/images/foto3.jpg", alt: "El equipo" },
+  { src: "/images/78004882-839a-4249-bed4-15ffff06cd92.jpeg", alt: "Panadería Maico" },
+  { src: "/images/9c1529f0-4adf-48b3-a78a-2e3a3c67eb17.jpeg", alt: "Nuestros productos" },
+  { src: "/images/c7231779-c3e0-49ca-b7a1-2b0f70123231.jpeg", alt: "El equipo" },
 ];
 
 const QUICK_LINKS = [
@@ -51,9 +51,6 @@ function HomePage() {
             </div>
           ))}
         </div>
-        <p className="home-gallery-hint">
-          Agregá fotos en <code>frontend/public/images/</code> con los nombres foto1.jpg, foto2.jpg, foto3.jpg
-        </p>
       </section>
 
       {/* Info */}
@@ -90,7 +87,7 @@ function HomePage() {
             <h3>Redes sociales</h3>
             <div className="home-socials">
               <a
-                href="https://instagram.com/"
+                href="https://www.instagram.com/soy.maico?igsh=ZWg4Y3E0dHJzcDlu"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="home-social-link instagram"

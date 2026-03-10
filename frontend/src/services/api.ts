@@ -163,6 +163,7 @@ export interface RecipeStep {
 export interface RecipeIngredient {
   id: number;
   quantity: string;
+  unit: Unit;
   ingredient: Ingredient;
 }
 
@@ -205,7 +206,7 @@ export async function createRecipe(data: {
   image?: string;
   yield: number;
   yieldUnit: string;
-  ingredients: { ingredientId: number; quantity: number }[];
+  ingredients: { ingredientId: number; quantity: number; unit: Unit }[];
   steps: { stepNumber: number; description: string }[];
 }): Promise<Recipe> {
   const res = await apiFetch<RecipeResponse>("/recipes", {
@@ -223,7 +224,7 @@ export async function updateRecipe(
     image?: string;
     yield?: number;
     yieldUnit?: string;
-    ingredients?: { ingredientId: number; quantity: number }[];
+    ingredients?: { ingredientId: number; quantity: number; unit: Unit }[];
     steps?: { stepNumber: number; description: string }[];
   }
 ): Promise<Recipe> {

@@ -69,7 +69,7 @@ function RecipeDetailPage() {
           {recipe.ingredients.map((ri) => (
             <span key={ri.id} className="ingredient-tag">
               <span className="ingredient-tag-qty">
-                {Number(ri.quantity)} {UNIT_LABELS[ri.ingredient.unit] || ri.ingredient.unit}
+                {Number(ri.quantity)} {UNIT_LABELS[ri.unit] || ri.unit}
               </span>
               {ri.ingredient.name}
             </span>

@@ -7,6 +7,7 @@ import {
   updateRecipe,
   uploadRecipeImage,
   Ingredient,
+  Unit,
 } from "../services/api";
 
 interface StepForm {
@@ -16,7 +17,24 @@ interface StepForm {
 interface IngredientForm {
   ingredientId: number;
   quantity: string;
+  unit: Unit;
 }
+
+const COMPATIBLE_UNITS: Record<Unit, Unit[]> = {
+  KG: ["KG", "G"],
+  G: ["G", "KG"],
+  L: ["L", "ML"],
+  ML: ["ML", "L"],
+  UNIT: ["UNIT"],
+};
+
+const UNIT_LABELS: Record<Unit, string> = {
+  KG: "Kg",
+  G: "g",
+  L: "L",
+  ML: "ml",
+  UNIT: "Unidad",
+};
 
 function RecipeFormPage() {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +48,7 @@ function RecipeFormPage() {
   const [recipeYield, setRecipeYield] = useState("");
   const [yieldUnit, setYieldUnit] = useState("unidades");
   const [ingredients, setIngredients] = useState<IngredientForm[]>([
-    { ingredientId: 0, quantity: "" },
+    { ingredientId: 0, quantity: "", unit: "G" },
   ]);
   const [steps, setSteps] = useState<StepForm[]>([{ description: "" }]);
   const [uploading, setUploading] = useState(false);
@@ -55,6 +73,7 @@ function RecipeFormPage() {
             recipe.ingredients.map((ri) => ({
               ingredientId: ri.ingredient.id,
               quantity: String(Number(ri.quantity)),
+              unit: ri.unit,
             }))
           );
           setSteps(
@@ -85,17 +104,27 @@ function RecipeFormPage() {
   }
 
   function addIngredient() {
-    setIngredients([...ingredients, { ingredientId: 0, quantity: "" }]);
+    setIngredients([...ingredients, { ingredientId: 0, quantity: "", unit: "G" }]);
   }
 
   function removeIngredient(index: number) {
     setIngredients(ingredients.filter((_, i) => i !== index));
   }
 
+  function getDefaultRecipeUnit(ingredientUnit: Unit): Unit {
+    if (ingredientUnit === "KG") return "G";
+    if (ingredientUnit === "L") return "ML";
+    return ingredientUnit;
+  }
+
   function updateIngredientField(index: number, field: keyof IngredientForm, value: string | number) {
     const updated = [...ingredients];
     if (field === "ingredientId") {
-      updated[index] = { ...updated[index], ingredientId: Number(value) };
+      const selectedIngredient = allIngredients.find((ai) => ai.id === Number(value));
+      const defaultUnit = selectedIngredient ? getDefaultRecipeUnit(selectedIngredient.unit) : "G";
+      updated[index] = { ...updated[index], ingredientId: Number(value), unit: defaultUnit };
+    } else if (field === "unit") {
+      updated[index] = { ...updated[index], unit: String(value) as Unit };
     } else {
       updated[index] = { ...updated[index], quantity: String(value) };
     }
@@ -132,6 +161,7 @@ function RecipeFormPage() {
         .map((ing) => ({
           ingredientId: ing.ingredientId,
           quantity: Number(ing.quantity),
+          unit: ing.unit,
         })),
       steps: steps
         .filter((s) => s.description.trim() !== "")
@@ -275,6 +305,21 @@ function RecipeFormPage() {
                   onChange={(e) => updateIngredientField(index, "quantity", e.target.value)}
                   placeholder="0"
                 />
+              </div>
+              <div className="form-group" style={{ flex: 0.7 }}>
+                <label>Unidad</label>
+                <select
+                  value={ing.unit}
+                  onChange={(e) => updateIngredientField(index, "unit", e.target.value)}
+                >
+                  {(() => {
+                    const selectedIng = allIngredients.find((ai) => ai.id === ing.ingredientId);
+                    const units: Unit[] = selectedIng ? COMPATIBLE_UNITS[selectedIng.unit] : ["G", "KG", "L", "ML", "UNIT"];
+                    return units.map((u) => (
+                      <option key={u} value={u}>{UNIT_LABELS[u]}</option>
+                    ));
+                  })()}
+                </select>
               </div>
               {ingredients.length > 1 && (
                 <button

@@ -52,6 +52,7 @@ export async function create(data: CreateRecipeInput) {
         create: data.ingredients.map((ing) => ({
           ingredientId: ing.ingredientId,
           quantity: ing.quantity,
+          unit: ing.unit,
         })),
       },
       steps: {
@@ -89,6 +90,7 @@ export async function update(id: number, data: UpdateRecipeInput) {
           recipeId: id,
           ingredientId: ing.ingredientId,
           quantity: ing.quantity,
+          unit: ing.unit,
         })),
       });
     }

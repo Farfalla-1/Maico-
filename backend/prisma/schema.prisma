@@ -77,6 +77,7 @@ model RecipeIngredient {
   recipeId     Int
   ingredientId Int
   quantity     Decimal
+  unit         Unit
   recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
 

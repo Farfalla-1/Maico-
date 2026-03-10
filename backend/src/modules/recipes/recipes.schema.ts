@@ -1,8 +1,11 @@
 import { z } from "zod";
 
+const unitEnum = z.enum(["KG", "G", "L", "ML", "UNIT"]);
+
 export const recipeIngredientSchema = z.object({
   ingredientId: z.number().int().positive(),
   quantity: z.number().positive("Quantity must be positive"),
+  unit: unitEnum,
 });
 
 export const recipeStepSchema = z.object({

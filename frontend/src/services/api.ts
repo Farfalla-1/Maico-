@@ -258,6 +258,57 @@ export async function uploadRecipeImage(file: File): Promise<string> {
   return result.data.imageUrl;
 }
 
+// Fixed Costs
+
+export interface FixedCost {
+  id: number;
+  name: string;
+  amount: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface FixedCostsResponse {
+  status: string;
+  data: FixedCost[];
+}
+
+interface FixedCostResponse {
+  status: string;
+  data: FixedCost;
+}
+
+export async function getFixedCosts(): Promise<FixedCost[]> {
+  const res = await apiFetch<FixedCostsResponse>("/fixed-costs");
+  return res.data;
+}
+
+export async function createFixedCost(data: {
+  name: string;
+  amount: number;
+}): Promise<FixedCost> {
+  const res = await apiFetch<FixedCostResponse>("/fixed-costs", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function updateFixedCost(
+  id: number,
+  data: { name?: string; amount?: number }
+): Promise<FixedCost> {
+  const res = await apiFetch<FixedCostResponse>(`/fixed-costs/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function deleteFixedCost(id: number): Promise<void> {
+  await apiFetch<unknown>(`/fixed-costs/${id}`, { method: "DELETE" });
+}
+
 // Calculator
 
 export interface CostBreakdownItem {
@@ -268,15 +319,23 @@ export interface CostBreakdownItem {
   subtotal: number;
 }
 
+export interface CostFixedCostItem {
+  name: string;
+  amount: number;
+}
+
 export interface CostResult {
   recipeName: string;
   yield: number;
   yieldUnit: string;
+  ingredientsCost: number;
+  fixedCostsTotal: number;
   totalCost: number;
   costPerUnit: number;
   marginPercent: number;
   suggestedPrice: number;
   breakdown: CostBreakdownItem[];
+  fixedCosts: CostFixedCostItem[];
 }
 
 interface CostResponse {

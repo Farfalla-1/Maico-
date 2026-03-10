@@ -9,6 +9,7 @@ import authRouter from "./auth/auth.router.js";
 import ingredientsRouter from "./modules/ingredients/ingredients.router.js";
 import recipesRouter from "./modules/recipes/recipes.router.js";
 import calculatorRouter from "./modules/calculator/calculator.router.js";
+import fixedCostsRouter from "./modules/fixed-costs/fixed-costs.router.js";
 
 // Ensure types are loaded
 import "./common/types.js";
@@ -40,6 +41,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/ingredients", ingredientsRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/calculator", calculatorRouter);
+app.use("/api/fixed-costs", fixedCostsRouter);
 
 // Health check
 app.get("/api/health", (_req, res) => {

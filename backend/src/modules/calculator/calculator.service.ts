@@ -9,35 +9,33 @@ interface BreakdownItem {
   subtotal: number;
 }
 
+interface FixedCostItem {
+  name: string;
+  amount: number;
+}
+
 interface CostCalculation {
   recipeName: string;
   yield: number;
   yieldUnit: string;
+  ingredientsCost: number;
+  fixedCostsTotal: number;
   totalCost: number;
   costPerUnit: number;
   marginPercent: number;
   suggestedPrice: number;
   breakdown: BreakdownItem[];
+  fixedCosts: FixedCostItem[];
 }
 
-/**
- * Convert a quantity from one unit to the ingredient's base unit.
- * E.g., ingredient is priced per KG ($5000/KG), recipe uses 195 G
- * → convertToBaseUnit(195, "G", "KG") = 0.195 KG
- * Then cost = 0.195 * $5000 = $975
- */
 function convertToBaseUnit(quantity: number, fromUnit: string, toUnit: string): number {
   if (fromUnit === toUnit) return quantity;
 
-  // Weight conversions
   if (fromUnit === "G" && toUnit === "KG") return quantity / 1000;
   if (fromUnit === "KG" && toUnit === "G") return quantity * 1000;
-
-  // Volume conversions
   if (fromUnit === "ML" && toUnit === "L") return quantity / 1000;
   if (fromUnit === "L" && toUnit === "ML") return quantity * 1000;
 
-  // Incompatible units (e.g., G to L) — no conversion possible
   return quantity;
 }
 
@@ -45,16 +43,17 @@ export async function calculateRecipeCost(
   recipeId: number,
   marginPercent: number
 ): Promise<CostCalculation> {
-  const recipe = await prisma.recipe.findUnique({
-    where: { id: recipeId },
-    include: {
-      ingredients: {
-        include: {
-          ingredient: true,
+  const [recipe, fixedCostsData] = await Promise.all([
+    prisma.recipe.findUnique({
+      where: { id: recipeId },
+      include: {
+        ingredients: {
+          include: { ingredient: true },
         },
       },
-    },
-  });
+    }),
+    prisma.fixedCost.findMany({ orderBy: { name: "asc" } }),
+  ]);
 
   if (!recipe) {
     throw new AppError("Recipe not found", 404);
@@ -66,7 +65,6 @@ export async function calculateRecipeCost(
     const recipeUnit = ri.unit;
     const ingredientUnit = ri.ingredient.unit;
 
-    // Convert recipe quantity to ingredient's base unit for cost calculation
     const quantityInBaseUnit = convertToBaseUnit(recipeQuantity, recipeUnit, ingredientUnit);
     const subtotal = pricePerBaseUnit * quantityInBaseUnit;
 
@@ -79,7 +77,14 @@ export async function calculateRecipeCost(
     };
   });
 
-  const totalCost = breakdown.reduce((sum, item) => sum + item.subtotal, 0);
+  const fixedCosts: FixedCostItem[] = fixedCostsData.map((fc) => ({
+    name: fc.name,
+    amount: Number(fc.amount),
+  }));
+
+  const ingredientsCost = breakdown.reduce((sum, item) => sum + item.subtotal, 0);
+  const fixedCostsTotal = fixedCosts.reduce((sum, item) => sum + item.amount, 0);
+  const totalCost = ingredientsCost + fixedCostsTotal;
   const costPerUnit = totalCost / recipe.yield;
   const suggestedPrice = costPerUnit * (1 + marginPercent / 100);
 
@@ -87,10 +92,13 @@ export async function calculateRecipeCost(
     recipeName: recipe.name,
     yield: recipe.yield,
     yieldUnit: recipe.yieldUnit,
+    ingredientsCost,
+    fixedCostsTotal,
     totalCost,
     costPerUnit,
     marginPercent,
     suggestedPrice,
     breakdown,
+    fixedCosts,
   };
 }

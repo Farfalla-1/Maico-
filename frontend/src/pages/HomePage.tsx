@@ -4,6 +4,7 @@ const GALLERY_IMAGES = [
   { src: "/images/78004882-839a-4249-bed4-15ffff06cd92.jpeg", alt: "Panadería Maico" },
   { src: "/images/9c1529f0-4adf-48b3-a78a-2e3a3c67eb17.jpeg", alt: "Nuestros productos" },
   { src: "/images/c7231779-c3e0-49ca-b7a1-2b0f70123231.jpeg", alt: "El equipo" },
+  { src: "/images/7d8168b9-6144-4efd-b5bc-448e08168aff.jpeg", alt: "Maico" },
 ];
 
 const QUICK_LINKS = [
@@ -53,66 +54,30 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Info */}
-      <section className="home-section">
-        <div className="home-info-grid">
-          {/* Horarios */}
-          <div className="home-info-card">
-            <h3>Horarios</h3>
-            <ul className="home-hours">
-              <li><span>Lunes a Viernes</span><span>6:00 - 20:00</span></li>
-              <li><span>Sábados</span><span>7:00 - 14:00</span></li>
-              <li><span>Domingos</span><span>Cerrado</span></li>
-            </ul>
-          </div>
-
-          {/* Ubicación */}
-          <div className="home-info-card">
-            <h3>Ubicación</h3>
-            <p className="home-address">
-              📍 Dirección de la panadería
-            </p>
-            <a
-              href="https://maps.google.com/?q=panaderia+maico"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="home-map-link"
-            >
-              Ver en Google Maps
-            </a>
-          </div>
-
-          {/* Redes */}
-          <div className="home-info-card">
-            <h3>Redes sociales</h3>
-            <div className="home-socials">
-              <a
-                href="https://www.instagram.com/soy.maico?igsh=ZWg4Y3E0dHJzcDlu"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="home-social-link instagram"
-              >
-                Instagram
-              </a>
-              <a
-                href="https://facebook.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="home-social-link facebook"
-              >
-                Facebook
-              </a>
-              <a
-                href="https://wa.me/549XXXXXXXXXX"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="home-social-link whatsapp"
-              >
-                WhatsApp
-              </a>
-            </div>
-          </div>
+      {/* Instagram section */}
+      <section className="home-section home-instagram-section">
+        <h2>Seguinos en Instagram</h2>
+        <p className="home-instagram-handle">@soy.maico</p>
+        <div className="home-instagram-embed">
+          <iframe
+            src="https://www.instagram.com/soy.maico/embed"
+            width="100%"
+            height="480"
+            frameBorder="0"
+            scrolling="no"
+            allowTransparency
+            loading="lazy"
+            title="Instagram de Maico"
+          />
         </div>
+        <a
+          href="https://www.instagram.com/soy.maico?igsh=ZWg4Y3E0dHJzcDlu"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="home-instagram-link"
+        >
+          Ver más en Instagram
+        </a>
       </section>
     </div>
   );

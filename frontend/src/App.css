@@ -794,100 +794,225 @@ button:disabled {
   font-size: 0.78rem;
 }
 
-/* Info grid */
+/* Instagram section */
 
-.home-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+.home-instagram-section {
+  text-align: center;
 }
 
-.home-info-card {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 1.25rem;
-}
-
-.home-info-card h3 {
+.home-instagram-handle {
+  color: #666;
   font-size: 1rem;
-  margin-bottom: 0.75rem;
-  color: #042e30;
+  margin: -0.5rem 0 1rem;
 }
 
-/* Hours */
+.home-instagram-embed {
+  max-width: 540px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
 
-.home-hours {
+.home-instagram-embed iframe {
+  display: block;
+}
+
+.home-instagram-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #042e30;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding: 0.6rem 1.5rem;
+  border: 2px solid #042e30;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.home-instagram-link:hover {
+  background: #042e30;
+  color: white;
+}
+
+/* Footer */
+
+.app-footer {
+  background: #042e30;
+  color: #e0e0e0;
+  padding: 2rem 1.5rem 1rem;
+  margin-top: 2rem;
+}
+
+.footer-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.footer-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.footer-brand-name {
+  font-family: "Georgia", serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.footer-col h4 {
+  color: white;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+.footer-hours {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
-.home-hours li {
+.footer-hours li {
   display: flex;
   justify-content: space-between;
-  padding: 0.35rem 0;
-  font-size: 0.88rem;
-  border-bottom: 1px solid #f5f0eb;
+  padding: 0.3rem 0;
+  font-size: 0.82rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.home-hours li:last-child {
+.footer-hours li:last-child {
   border-bottom: none;
 }
 
-/* Location */
-
-.home-address {
-  font-size: 0.9rem;
-  margin-bottom: 0.75rem;
-  color: #555;
+.footer-map-embed {
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-.home-map-link {
+.footer-map-link {
   display: inline-block;
-  font-size: 0.85rem;
-  color: #042e30;
+  font-size: 0.82rem;
+  color: #bbd1a5;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
 }
 
-.home-map-link:hover {
+.footer-map-link:hover {
   text-decoration: underline;
 }
 
-/* Social links */
-
-.home-socials {
-  display: flex;
-  flex-direction: column;
+.footer-social-link {
+  display: inline-flex;
+  align-items: center;
   gap: 0.5rem;
-}
-
-.home-social-link {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  color: #e0e0e0;
   text-decoration: none;
-  color: #fff;
-  font-size: 0.88rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.footer-social-link:hover {
+  color: white;
+}
+
+.footer-bottom {
   text-align: center;
-  transition: opacity 0.2s;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.home-social-link:hover {
-  opacity: 0.85;
+/* WhatsApp floating button */
+
+.wa-floating {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
 }
 
-.home-social-link.instagram {
-  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-}
-
-.home-social-link.facebook {
-  background: #1877f2;
-}
-
-.home-social-link.whatsapp {
+.wa-fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
   background: #25d366;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.wa-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+.wa-popup {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  text-align: center;
+}
+
+.wa-popup p {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.wa-popup-btn {
+  display: inline-block;
+  background: #25d366;
+  color: white;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: background 0.2s;
+}
+
+.wa-popup-btn:hover {
+  background: #1da851;
 }
 
 /* Calculator */
@@ -1234,4 +1359,112 @@ button:disabled {
     flex: 1;
     min-width: 60%;
   }
+}
+
+/* Fixed Costs */
+.fixed-costs-card {
+  margin-bottom: 1.5rem;
+}
+
+.fixed-costs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.fixed-costs-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.btn-toggle {
+  background: none;
+  border: 1px solid #042e30;
+  color: #042e30;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-toggle:hover {
+  background: #042e30;
+  color: white;
+}
+
+.fixed-costs-summary {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.fixed-costs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.fixed-cost-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.fixed-cost-input-name {
+  flex: 2;
+  min-width: 120px;
+}
+
+.fixed-cost-input-amount {
+  flex: 1;
+  min-width: 80px;
+}
+
+.fixed-cost-name {
+  flex: 2;
+  font-weight: 500;
+}
+
+.fixed-cost-amount {
+  flex: 1;
+  text-align: right;
+  font-weight: 600;
+  color: #042e30;
+}
+
+.btn-edit-sm,
+.btn-save-sm,
+.btn-cancel-sm {
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.btn-edit-sm {
+  background: #e8f0e0;
+  color: #042e30;
+}
+
+.btn-save-sm {
+  background: #042e30;
+  color: white;
+}
+
+.btn-cancel-sm {
+  background: #eee;
+  color: #666;
+}
+
+.fixed-cost-bar {
+  background: #8b6f47 !important;
+}
+
+.fixed-cost-add {
+  padding-top: 0.5rem;
+  border-top: 1px solid #eee;
 }

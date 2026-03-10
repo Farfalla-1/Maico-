@@ -1,26 +1,30 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../../common/helpers.js";
-import path from "path";
-import fs from "fs/promises";
+import { v2 as cloudinary } from "cloudinary";
+import { env } from "../../common/env.js";
 
-const UPLOAD_DIR = path.join(process.cwd(), "uploads", "recipes");
-
-async function ensureUploadDir() {
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
-}
+cloudinary.config({
+  cloud_name: env.CLOUDINARY_CLOUD_NAME,
+  api_key: env.CLOUDINARY_API_KEY,
+  api_secret: env.CLOUDINARY_API_SECRET,
+});
 
 export const uploadImageHandler = asyncHandler(async (req: Request, res: Response) => {
-  await ensureUploadDir();
-
   if (!req.file) {
     res.status(400).json({ status: "error", message: "No file uploaded" });
     return;
   }
 
-  const filename = `${Date.now()}-${req.file.originalname}`;
-  const filepath = path.join(UPLOAD_DIR, filename);
-  await fs.writeFile(filepath, req.file.buffer);
+  const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "maico/recipes" },
+      (error, result) => {
+        if (error || !result) return reject(error);
+        resolve(result);
+      }
+    );
+    stream.end(req.file!.buffer);
+  });
 
-  const imageUrl = `/uploads/recipes/${filename}`;
-  res.json({ status: "success", data: { imageUrl } });
+  res.json({ status: "success", data: { imageUrl: result.secure_url } });
 });

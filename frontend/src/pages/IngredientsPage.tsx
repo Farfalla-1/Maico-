@@ -16,21 +16,6 @@ const UNIT_LABELS: Record<Unit, string> = {
   UNIT: "Unidad",
 };
 
-const UNIT_COLORS: Record<Unit, string> = {
-  KG: "#4a7c59",
-  G: "#6a9e78",
-  L: "#2e6b8a",
-  ML: "#5a9bb5",
-  UNIT: "#8a6d3b",
-};
-
-const UNIT_CATEGORY: Record<Unit, string> = {
-  KG: "Seco",
-  G: "Seco",
-  L: "Líquido",
-  ML: "Líquido",
-  UNIT: "Unidad",
-};
 
 const UNITS: Unit[] = ["KG", "G", "L", "ML", "UNIT"];
 

@@ -20,7 +20,9 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    if (response.status === 401) {
+    const isAuthRoute = path.startsWith("/auth/login") || path.startsWith("/auth/refresh");
+
+    if (response.status === 401 && !isAuthRoute && token) {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       window.location.href = "/login?expired=1";

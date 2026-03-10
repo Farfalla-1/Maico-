@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "./errors.js";
 
-export function parseId(raw: string): number {
-  const id = Number(raw);
+export function parseId(raw: string | string[]): number {
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  const id = Number(value);
   if (!Number.isInteger(id) || id <= 0) {
     throw new AppError("Invalid ID parameter", 400);
   }

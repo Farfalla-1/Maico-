@@ -193,19 +193,20 @@ button[type="submit"]:hover {
   color: #ff6b6b;
 }
 
-.nav-login-btn {
-  background: #e6d8c8;
+.nav-login-btn.nav-login-btn {
+  background: white;
   color: #042e30;
   padding: 0.45rem 1.2rem;
   border-radius: 6px;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
-.nav-login-btn:hover {
-  background: white;
+.nav-login-btn.nav-login-btn:hover {
+  background: #bbd1a5;
+  color: #042e30;
 }
 
 button:disabled {

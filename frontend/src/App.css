@@ -178,6 +178,46 @@ button[type="submit"]:hover {
   max-width: 100%;
 }
 
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6e6c3d;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle:hover {
+  color: #5a5832;
+}
+
+.login-back-link {
+  display: block;
+  text-align: center;
+  margin-top: 1.25rem;
+  color: #6e6c3d;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.login-back-link:hover {
+  text-decoration: underline;
+}
+
 /* Logout button */
 
 .nav-logout {

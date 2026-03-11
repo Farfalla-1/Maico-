@@ -28,7 +28,7 @@ function AdminRoute({ children }: { children: ReactNode }) {
 }
 
 function AppLayout() {
-  const { logout, isAdmin } = useAuth();
+  const { isAuthenticated, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,7 +39,7 @@ function AppLayout() {
 
   function handleLogout() {
     logout();
-    navigate("/login");
+    navigate("/");
   }
 
   const [waOpen, setWaOpen] = useState(false);
@@ -62,40 +62,53 @@ function AppLayout() {
           <img src="/logo crema.png" alt="Maico" className="nav-logo" />
           <span className="brand-name">Maico</span>
         </Link>
-        <button
-          className={`hamburger ${menuOpen ? "open" : ""}`}
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-        <div className={`nav-links ${menuOpen ? "nav-open" : ""}`}>
-          <Link to="/ingredients">Ingredientes</Link>
-          <Link to="/recipes">Recetas</Link>
-          <Link to="/calculator">Calculadora</Link>
-          {isAdmin && <Link to="/users">Usuarios</Link>}
-          <button onClick={handleLogout} className="nav-logout">
-            Salir
-          </button>
-        </div>
+
+        {isAuthenticated ? (
+          <>
+            <button
+              className={`hamburger ${menuOpen ? "open" : ""}`}
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+            <div className={`nav-links ${menuOpen ? "nav-open" : ""}`}>
+              <Link to="/ingredients">Ingredientes</Link>
+              <Link to="/recipes">Recetas</Link>
+              <Link to="/calculator">Calculadora</Link>
+              {isAdmin && <Link to="/users">Usuarios</Link>}
+              <button onClick={handleLogout} className="nav-logout">
+                Salir
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="nav-links">
+            <Link to="/login" className="nav-login-btn">Iniciar sesión</Link>
+          </div>
+        )}
       </nav>
+
       <main className="main-content">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/ingredients" element={<IngredientsPage />} />
-          <Route path="/recipes/new" element={<RecipeFormPage />} />
-          <Route path="/recipes/:id/edit" element={<RecipeFormPage />} />
-          <Route path="/recipes/:id" element={<RecipeDetailPage />} />
-          <Route path="/recipes" element={<RecipesPage />} />
-          <Route path="/calculator" element={<CalculatorPage />} />
+          <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
+          <Route path="/ingredients" element={<ProtectedRoute><IngredientsPage /></ProtectedRoute>} />
+          <Route path="/recipes/new" element={<ProtectedRoute><RecipeFormPage /></ProtectedRoute>} />
+          <Route path="/recipes/:id/edit" element={<ProtectedRoute><RecipeFormPage /></ProtectedRoute>} />
+          <Route path="/recipes/:id" element={<ProtectedRoute><RecipeDetailPage /></ProtectedRoute>} />
+          <Route path="/recipes" element={<ProtectedRoute><RecipesPage /></ProtectedRoute>} />
+          <Route path="/calculator" element={<ProtectedRoute><CalculatorPage /></ProtectedRoute>} />
           <Route
             path="/users"
             element={
-              <AdminRoute>
-                <UsersPage />
-              </AdminRoute>
+              <ProtectedRoute>
+                <AdminRoute>
+                  <UsersPage />
+                </AdminRoute>
+              </ProtectedRoute>
             }
           />
         </Routes>
@@ -192,22 +205,9 @@ function AppLayout() {
 }
 
 function App() {
-  const { isAuthenticated } = useAuth();
-
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
-      />
-      <Route
-        path="/*"
-        element={
-          <ProtectedRoute>
-            <AppLayout />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/*" element={<AppLayout />} />
     </Routes>
   );
 }

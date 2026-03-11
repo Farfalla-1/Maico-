@@ -85,9 +85,7 @@ function AppLayout() {
             </div>
           </>
         ) : (
-          <div className="nav-links">
-            <Link to="/login" className="nav-login-btn">Iniciar sesión</Link>
-          </div>
+          <Link to="/login" className="nav-login-btn">Iniciar sesión</Link>
         )}
       </nav>
 

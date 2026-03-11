@@ -38,11 +38,6 @@ function HomePage() {
               <span>Villa Ballester, Buenos Aires</span>
             </div>
           </div>
-          <div className="hero-v2-scroll">
-            <div className="hero-v2-scroll-indicator">
-              <div className="hero-v2-scroll-dot" />
-            </div>
-          </div>
         </div>
       </section>
 

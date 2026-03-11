@@ -713,7 +713,8 @@ button:disabled {
 /* ===== Home V2 - Redesign ===== */
 
 .home-v2 {
-  margin: -2rem -1.5rem 0;
+  margin: -2rem calc(-50vw + 50%) 0;
+  width: 100vw;
 }
 
 /* Hero */
@@ -979,7 +980,8 @@ button:disabled {
 
 @media (max-width: 768px) {
   .home-v2 {
-    margin: -1rem -1rem 0;
+    margin: -1rem calc(-50vw + 50%) 0;
+    width: 100vw;
   }
 
   .hero-v2 {

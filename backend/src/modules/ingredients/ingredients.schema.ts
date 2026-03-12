@@ -22,3 +22,16 @@ export const updateIngredientSchema = z
   );
 
 export type UpdateIngredientInput = z.infer<typeof updateIngredientSchema>;
+
+export const bulkUpdatePricesSchema = z.object({
+  updates: z
+    .array(
+      z.object({
+        id: z.number().int().positive(),
+        price: z.number().positive("Price must be positive"),
+      })
+    )
+    .min(1, "At least one update is required"),
+});
+
+export type BulkUpdatePricesInput = z.infer<typeof bulkUpdatePricesSchema>;

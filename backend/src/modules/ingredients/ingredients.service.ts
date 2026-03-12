@@ -1,6 +1,6 @@
 import { prisma } from "../../common/db.js";
 import { AppError } from "../../common/errors.js";
-import { CreateIngredientInput, UpdateIngredientInput } from "./ingredients.schema.js";
+import { CreateIngredientInput, UpdateIngredientInput, BulkUpdatePricesInput } from "./ingredients.schema.js";
 
 export async function getAll() {
   return prisma.ingredient.findMany({
@@ -58,6 +58,30 @@ export async function update(id: number, data: UpdateIngredientInput) {
         ...(data.price !== undefined && { price: data.price }),
       },
     });
+  });
+}
+
+export async function bulkUpdatePrices(data: BulkUpdatePricesInput) {
+  return prisma.$transaction(async (tx) => {
+    const results = [];
+    for (const item of data.updates) {
+      const existing = await tx.ingredient.findUnique({ where: { id: item.id } });
+      if (!existing) throw new AppError(`Ingredient with id ${item.id} not found`, 404);
+
+      if (Number(existing.price) !== item.price) {
+        await tx.priceHistory.create({
+          data: { ingredientId: item.id, price: existing.price },
+        });
+        const updated = await tx.ingredient.update({
+          where: { id: item.id },
+          data: { price: item.price },
+        });
+        results.push(updated);
+      } else {
+        results.push(existing);
+      }
+    }
+    return results;
   });
 }
 

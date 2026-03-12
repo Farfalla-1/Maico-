@@ -1,23 +1,23 @@
 import { Router } from "express";
 import { authenticate } from "../../auth/auth.middleware.js";
+import { authorize } from "../../auth/auth.middleware.js";
 import {
   getAllHandler,
-  getByIdHandler,
+  getSummaryHandler,
   createHandler,
   updateHandler,
-  bulkUpdateHandler,
-  removeHandler,
-} from "./ingredients.controller.js";
+  deleteHandler,
+} from "./ledger.controller.js";
 
 const router = Router();
 
 router.use(authenticate);
+router.use(authorize("ADMIN"));
 
 router.get("/", getAllHandler);
-router.get("/:id", getByIdHandler);
+router.get("/summary", getSummaryHandler);
 router.post("/", createHandler);
-router.put("/bulk-prices", bulkUpdateHandler);
 router.put("/:id", updateHandler);
-router.delete("/:id", removeHandler);
+router.delete("/:id", deleteHandler);
 
 export default router;

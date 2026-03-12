@@ -152,6 +152,16 @@ export async function deleteIngredient(id: number): Promise<void> {
   await apiFetch<unknown>(`/ingredients/${id}`, { method: "DELETE" });
 }
 
+export async function bulkUpdatePrices(
+  updates: { id: number; price: number }[]
+): Promise<Ingredient[]> {
+  const res = await apiFetch<IngredientsResponse>("/ingredients/bulk-prices", {
+    method: "PUT",
+    body: JSON.stringify({ updates }),
+  });
+  return res.data;
+}
+
 // Recipes
 
 export interface RecipeStep {
@@ -307,6 +317,104 @@ export async function updateFixedCost(
 
 export async function deleteFixedCost(id: number): Promise<void> {
   await apiFetch<unknown>(`/fixed-costs/${id}`, { method: "DELETE" });
+}
+
+// Ledger
+
+export type LedgerType = "INCOME" | "EXPENSE";
+
+export interface LedgerEntry {
+  id: number;
+  type: LedgerType;
+  description: string;
+  amount: string;
+  date: string;
+  category: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LedgerSummary {
+  totalIncome: number;
+  totalExpense: number;
+  balance: number;
+  count: number;
+}
+
+interface LedgerEntriesResponse {
+  status: string;
+  data: LedgerEntry[];
+}
+
+interface LedgerEntryResponse {
+  status: string;
+  data: LedgerEntry;
+}
+
+interface LedgerSummaryResponse {
+  status: string;
+  data: LedgerSummary;
+}
+
+export async function getLedgerEntries(params?: {
+  month?: number;
+  year?: number;
+  type?: string;
+}): Promise<LedgerEntry[]> {
+  const query = new URLSearchParams();
+  if (params?.month) query.set("month", String(params.month));
+  if (params?.year) query.set("year", String(params.year));
+  if (params?.type) query.set("type", params.type);
+  const qs = query.toString();
+  const res = await apiFetch<LedgerEntriesResponse>(`/ledger${qs ? `?${qs}` : ""}`);
+  return res.data;
+}
+
+export async function getLedgerSummary(params?: {
+  month?: number;
+  year?: number;
+}): Promise<LedgerSummary> {
+  const query = new URLSearchParams();
+  if (params?.month) query.set("month", String(params.month));
+  if (params?.year) query.set("year", String(params.year));
+  const qs = query.toString();
+  const res = await apiFetch<LedgerSummaryResponse>(`/ledger/summary${qs ? `?${qs}` : ""}`);
+  return res.data;
+}
+
+export async function createLedgerEntry(data: {
+  type: LedgerType;
+  description: string;
+  amount: number;
+  date: string;
+  category?: string;
+}): Promise<LedgerEntry> {
+  const res = await apiFetch<LedgerEntryResponse>("/ledger", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function updateLedgerEntry(
+  id: number,
+  data: {
+    type?: LedgerType;
+    description?: string;
+    amount?: number;
+    date?: string;
+    category?: string | null;
+  }
+): Promise<LedgerEntry> {
+  const res = await apiFetch<LedgerEntryResponse>(`/ledger/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function deleteLedgerEntry(id: number): Promise<void> {
+  await apiFetch<unknown>(`/ledger/${id}`, { method: "DELETE" });
 }
 
 // Calculator

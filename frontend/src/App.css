@@ -397,67 +397,299 @@ button:disabled {
   gap: 0.5rem;
 }
 
-/* Ingredient cards */
+/* Ingredients page */
 
-.ingredient-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
+.ing-page-count {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 0.25rem;
 }
 
-.ingredient-card {
-  background: #f5ede4;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  border-left: 4px solid #ccc;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+.ing-table-desktop {
+  display: table;
 }
 
-.ingredient-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.ing-cards-mobile {
+  display: none;
 }
 
-.ingredient-card-header h3 {
-  font-size: 1.05rem;
-  margin: 0;
+.ing-name-cell {
+  font-weight: 600;
 }
 
-.ingredient-card-badge {
-  font-size: 0.7rem;
+.ing-price-cell {
+  font-weight: 600;
+  color: #2a3a2a;
+}
+
+.ing-date-cell {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.ing-unit-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  background: #5a5832;
   color: #f5ede4;
-  padding: 0.2rem 0.6rem;
+  padding: 0.15rem 0.55rem;
   border-radius: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
 
-.ingredient-card-price {
-  font-size: 1.4rem;
+/* Mobile ingredient cards */
+
+.ing-card {
+  background: #f5ede4;
+  border-radius: 8px;
+  border: 1px solid #d9ccbe;
+  padding: 1rem 1rem 0.85rem;
+}
+
+.ing-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.ing-card-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ing-card-info h3 {
+  font-size: 1rem;
+  margin: 0;
+  color: #2a3a2a;
+}
+
+.ing-card-bottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.ing-card-price {
+  font-size: 1.15rem;
   font-weight: 700;
-  color: #042e30;
+  color: #2a3a2a;
 }
 
-.ingredient-card-unit {
-  font-size: 0.85rem;
-  font-weight: 400;
-  color: #888;
-}
-
-.ingredient-card-date {
+.ing-card-date {
   font-size: 0.78rem;
   color: #aaa;
 }
 
-.ingredient-card-actions {
+/* Dropdown menu */
+
+/* Page header actions */
+
+.page-header-actions {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.25rem;
+  align-items: center;
+}
+
+.bulk-edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem !important;
+  font-size: 0.85rem !important;
+}
+
+/* Bulk edit panel */
+
+.bulk-panel {
+  background: #f5ede4;
+  border: 1px solid #d9ccbe;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.bulk-panel h2 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.bulk-percent-row {
+  margin-bottom: 1rem;
+}
+
+.bulk-percent-input label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #2a3a2a;
+}
+
+.bulk-percent-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bulk-percent-controls input {
+  width: 100px;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.bulk-percent-sign {
+  font-weight: 600;
+  color: #888;
+}
+
+.bulk-hint {
+  font-size: 0.78rem;
+  color: #aaa;
+  margin-top: 0.35rem;
+}
+
+.bulk-select-all {
+  margin-bottom: 0.75rem;
+}
+
+.bulk-select-all label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #2a3a2a;
+  cursor: pointer;
+}
+
+.bulk-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.bulk-table {
+  border: none !important;
+}
+
+.bulk-old-price {
+  color: #888;
+}
+
+.bulk-price-input {
+  width: 110px;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.bulk-row-unselected {
+  opacity: 0.4;
+}
+
+.bulk-diff {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.bulk-diff-up {
+  color: #c00;
+  font-weight: 600;
+}
+
+.bulk-diff-down {
+  color: #2d7a3a;
+  font-weight: 600;
+}
+
+.bulk-diff-pct {
+  font-size: 0.75rem;
+  margin-left: 0.3rem;
+  opacity: 0.8;
+}
+
+.bulk-diff-none {
+  color: #ccc;
+}
+
+.bulk-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.bulk-change-count {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.bulk-actions-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ing-dropdown {
+  position: relative;
+}
+
+.ing-dropdown-trigger {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: #888;
+  border-radius: 4px;
+}
+
+.ing-dropdown-trigger:hover {
+  background: rgba(0,0,0,0.06);
+  color: #2a3a2a;
+}
+
+.ing-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #f5ede4;
+  border: 1px solid #d9ccbe;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  min-width: 120px;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.ing-dropdown-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.55rem 0.85rem;
+  border: none;
+  background: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #2a3a2a;
+}
+
+.ing-dropdown-menu button:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.ing-dropdown-danger {
+  color: #c00 !important;
+}
+
+.ing-dropdown-danger:hover {
+  background: rgba(204,0,0,0.06) !important;
 }
 
 /* Empty state */
@@ -469,6 +701,264 @@ button:disabled {
   background: #f5ede4;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
+}
+
+/* Ledger page */
+
+.ledger-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.ledger-summary-card {
+  background: #f5ede4;
+  border-radius: 8px;
+  border: 1px solid #d9ccbe;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ledger-summary-label {
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ledger-summary-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.ledger-income .ledger-summary-value {
+  color: #2d7a3a;
+}
+
+.ledger-expense .ledger-summary-value {
+  color: #c00;
+}
+
+.ledger-positive .ledger-summary-value {
+  color: #2d7a3a;
+}
+
+.ledger-negative .ledger-summary-value {
+  color: #c00;
+}
+
+.ledger-progress {
+  margin-bottom: 1.25rem;
+}
+
+.ledger-progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #d32f2f;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.ledger-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+.progress-green {
+  background: #2d7a3a;
+}
+
+.progress-red {
+  background: #c00;
+}
+
+.ledger-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.35rem;
+}
+
+.ledger-progress-pct {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.ledger-filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.ledger-filters select {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #d9ccbe;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: #f5ede4;
+  color: #2a3a2a;
+}
+
+.ledger-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem !important;
+  font-size: 0.85rem !important;
+  white-space: nowrap;
+}
+
+.ledger-export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ledger-type-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1rem;
+  border: 1px solid #d9ccbe;
+  border-radius: 6px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.ledger-type-btn {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  background: #f5ede4;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #888;
+  transition: all 0.15s;
+}
+
+.ledger-type-btn.active-income {
+  background: #2d7a3a;
+  color: #fff;
+}
+
+.ledger-type-btn.active-expense {
+  background: #c00;
+  color: #fff;
+}
+
+.ledger-type-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge-income {
+  background: #e6f4ea;
+  color: #2d7a3a;
+}
+
+.badge-expense {
+  background: #fce8e8;
+  color: #c00;
+}
+
+.ledger-table-desktop {
+  display: table;
+}
+
+.ledger-cards-mobile {
+  display: none;
+}
+
+.ledger-desc-cell {
+  font-weight: 500;
+}
+
+.ledger-date-cell {
+  color: #888;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.ledger-cat-cell {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.ledger-amount-cell {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.amount-income {
+  color: #2d7a3a;
+}
+
+.amount-expense {
+  color: #c00;
+}
+
+/* Mobile ledger cards */
+
+.ledger-card {
+  background: #f5ede4;
+  border-radius: 8px;
+  border: 1px solid #d9ccbe;
+  padding: 0.85rem 1rem;
+}
+
+.ledger-card-income {
+  border-left: 3px solid #2d7a3a;
+}
+
+.ledger-card-expense {
+  border-left: 3px solid #c00;
+}
+
+.ledger-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.ledger-card-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ledger-card-cat {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.ledger-card-desc {
+  font-size: 0.9rem;
+  color: #2a3a2a;
+  margin: 0 0 0.5rem;
+}
+
+.ledger-card-bottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.ledger-card-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.ledger-card-date {
+  font-size: 0.78rem;
+  color: #aaa;
 }
 
 /* Recipe grid */
@@ -1504,7 +1994,36 @@ button:disabled {
     gap: 0.75rem;
   }
 
-  .page-header .btn-primary {
+  .page-header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .page-header .btn-primary,
+  .page-header .bulk-edit-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .bulk-percent-controls {
+    flex-wrap: wrap;
+  }
+
+  .bulk-price-input {
+    width: 90px;
+  }
+
+  .bulk-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bulk-actions-btns {
+    flex-direction: column;
+  }
+
+  .bulk-actions-btns button {
     width: 100%;
     text-align: center;
   }
@@ -1521,9 +2040,39 @@ button:disabled {
     overflow-x: auto;
   }
 
-  /* Ingredient cards */
-  .ingredient-grid {
+  /* Ingredients: hide table, show cards on mobile */
+  .ing-table-desktop {
+    display: none !important;
+  }
+
+  .ing-cards-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* Ledger: hide table, show cards on mobile */
+  .ledger-table-desktop {
+    display: none !important;
+  }
+
+  .ledger-cards-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .ledger-summary {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .ledger-filters {
+    flex-direction: column;
+  }
+
+  .ledger-filters select {
+    width: 100%;
   }
 
   /* Recipe grid */

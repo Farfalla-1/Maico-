@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createIngredientSchema, updateIngredientSchema } from "./ingredients.schema.js";
+import { createIngredientSchema, updateIngredientSchema, bulkUpdatePricesSchema } from "./ingredients.schema.js";
 import * as ingredientsService from "./ingredients.service.js";
 import { asyncHandler, parseId } from "../../common/helpers.js";
 
@@ -25,6 +25,12 @@ export const updateHandler = asyncHandler(async (req: Request, res: Response) =>
   const data = updateIngredientSchema.parse(req.body);
   const ingredient = await ingredientsService.update(id, data);
   res.json({ status: "success", data: ingredient });
+});
+
+export const bulkUpdateHandler = asyncHandler(async (req: Request, res: Response) => {
+  const data = bulkUpdatePricesSchema.parse(req.body);
+  const results = await ingredientsService.bulkUpdatePrices(data);
+  res.json({ status: "success", data: results });
 });
 
 export const removeHandler = asyncHandler(async (req: Request, res: Response) => {

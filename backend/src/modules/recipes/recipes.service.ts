@@ -41,37 +41,51 @@ export async function getById(id: number) {
 }
 
 export async function create(data: CreateRecipeInput) {
-  return prisma.recipe.create({
-    data: {
-      name: data.name,
-      description: data.description,
-      image: data.image,
-      yield: data.yield,
-      yieldUnit: data.yieldUnit,
-      ingredients: {
-        create: data.ingredients.map((ing) => ({
-          ingredientId: ing.ingredientId,
-          quantity: ing.quantity,
-          unit: ing.unit,
-        })),
-      },
-      steps: {
-        create: data.steps.map((step) => ({
-          stepNumber: step.stepNumber,
-          description: step.description,
-        })),
-      },
-    },
-    include: {
-      ingredients: {
-        include: {
-          ingredient: true,
+  return prisma.$transaction(async (tx) => {
+    const recipe = await tx.recipe.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        image: data.image,
+        yield: data.yield,
+        yieldUnit: data.yieldUnit,
+        ingredients: {
+          create: data.ingredients.map((ing) => ({
+            ingredientId: ing.ingredientId,
+            quantity: ing.quantity,
+            unit: ing.unit,
+          })),
+        },
+        steps: {
+          create: data.steps.map((step) => ({
+            stepNumber: step.stepNumber,
+            description: step.description,
+          })),
         },
       },
-      steps: {
-        orderBy: { stepNumber: "asc" },
+      include: {
+        ingredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+        steps: {
+          orderBy: { stepNumber: "asc" },
+        },
       },
-    },
+    });
+
+    await tx.stockItem.create({
+      data: {
+        type: "FINISHED_PRODUCT",
+        name: recipe.name,
+        recipeId: recipe.id,
+        unit: recipe.yieldUnit,
+        currentStock: 0,
+      },
+    });
+
+    return recipe;
   });
 }
 
@@ -106,7 +120,7 @@ export async function update(id: number, data: UpdateRecipeInput) {
       });
     }
 
-    return tx.recipe.update({
+    const updated = await tx.recipe.update({
       where: { id },
       data: {
         ...(data.name !== undefined && { name: data.name }),
@@ -126,6 +140,19 @@ export async function update(id: number, data: UpdateRecipeInput) {
         },
       },
     });
+
+    // Keep StockItem in sync
+    if (data.name !== undefined || data.yieldUnit !== undefined) {
+      await tx.stockItem.updateMany({
+        where: { type: "FINISHED_PRODUCT", recipeId: id },
+        data: {
+          ...(data.name !== undefined && { name: data.name }),
+          ...(data.yieldUnit !== undefined && { unit: data.yieldUnit }),
+        },
+      });
+    }
+
+    return updated;
   });
 }
 

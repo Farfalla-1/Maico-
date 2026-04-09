@@ -5,9 +5,11 @@ import {
   createLedgerEntry,
   updateLedgerEntry,
   deleteLedgerEntry,
+  getStockItems,
   LedgerEntry,
   LedgerSummary,
   LedgerType,
+  StockItem,
 } from "../services/api";
 
 const MONTHS = [
@@ -108,6 +110,17 @@ function DropdownMenu({
   );
 }
 
+interface SaleItemRow {
+  stockItemId: number;
+  quantity: string;
+  deductStock: boolean;
+}
+
+interface ExtraChargeRow {
+  description: string;
+  amount: string;
+}
+
 function LedgerPage() {
   const now = new Date();
   const [entries, setEntries] = useState<LedgerEntry[]>([]);
@@ -130,6 +143,36 @@ function LedgerPage() {
   const [category, setCategory] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Stock linking for EXPENSE
+  const [showStockLink, setShowStockLink] = useState(false);
+  const [rawMaterialItems, setRawMaterialItems] = useState<StockItem[]>([]);
+  const [stockEntries, setStockEntries] = useState<{ stockItemId: number; quantity: string }[]>([]);
+
+  // Sale items for INCOME
+  const [productItems, setProductItems] = useState<StockItem[]>([]);
+  const [saleItems, setSaleItems] = useState<SaleItemRow[]>([]);
+  const [extraCharges, setExtraCharges] = useState<ExtraChargeRow[]>([]);
+
+  async function loadStockItemsForType(type: LedgerType) {
+    try {
+      if (type === "EXPENSE") {
+        const data = await getStockItems("RAW_MATERIAL");
+        setRawMaterialItems(data);
+      } else {
+        const data = await getStockItems("FINISHED_PRODUCT");
+        setProductItems(data);
+      }
+    } catch {
+      // non-critical
+    }
+  }
+
+  useEffect(() => {
+    if (showForm && !editingId) {
+      loadStockItemsForType(formType);
+    }
+  }, [showForm, formType, editingId]);
 
   async function loadData() {
     try {
@@ -166,6 +209,10 @@ function LedgerPage() {
     setEditingId(null);
     setFormError(null);
     setShowForm(false);
+    setShowStockLink(false);
+    setStockEntries([]);
+    setSaleItems([]);
+    setExtraCharges([]);
   }
 
   function handleEdit(entry: LedgerEntry) {
@@ -193,17 +240,58 @@ function LedgerPage() {
     }
 
     try {
-      const payload = {
-        type: formType,
-        description,
-        amount: amountNum,
-        date,
-        category: category || undefined,
-      };
-
       if (editingId) {
-        await updateLedgerEntry(editingId, payload);
+        await updateLedgerEntry(editingId, {
+          type: formType,
+          description,
+          amount: amountNum,
+          date,
+          category: category || undefined,
+        });
       } else {
+        const payload: Parameters<typeof createLedgerEntry>[0] = {
+          type: formType,
+          description,
+          amount: amountNum,
+          date,
+          category: category || undefined,
+        };
+
+        if (formType === "EXPENSE") {
+          // Stock movements for purchases
+          if (showStockLink && stockEntries.length > 0) {
+            const valid = stockEntries
+              .filter((se) => se.stockItemId && Number(se.quantity) > 0)
+              .map((se) => ({ stockItemId: se.stockItemId, quantity: Number(se.quantity) }));
+            if (valid.length > 0) {
+              payload.stockMovements = valid;
+            }
+          }
+        } else {
+          // Sale items for sales
+          if (saleItems.length > 0) {
+            const valid = saleItems
+              .filter((si) => si.stockItemId && Number(si.quantity) > 0)
+              .map((si) => ({
+                stockItemId: si.stockItemId,
+                quantity: Number(si.quantity),
+                deductStock: si.deductStock,
+              }));
+            if (valid.length > 0) {
+              payload.saleItems = valid;
+            }
+          }
+          // Extra charges
+          if (extraCharges.length > 0) {
+            const valid = extraCharges
+              .filter((ec) => ec.description.trim() && Number(ec.amount) > 0)
+              .map((ec) => ({ description: ec.description, amount: Number(ec.amount) }));
+            if (valid.length > 0) {
+              payload.extraCharges = valid;
+            }
+          }
+        }
+
         await createLedgerEntry(payload);
       }
       resetForm();
@@ -333,14 +421,14 @@ function LedgerPage() {
             <button
               type="button"
               className={`ledger-type-btn ${formType === "INCOME" ? "active-income" : ""}`}
-              onClick={() => setFormType("INCOME")}
+              onClick={() => { setFormType("INCOME"); setSaleItems([]); setExtraCharges([]); setStockEntries([]); setShowStockLink(false); }}
             >
               Ingreso
             </button>
             <button
               type="button"
               className={`ledger-type-btn ${formType === "EXPENSE" ? "active-expense" : ""}`}
-              onClick={() => setFormType("EXPENSE")}
+              onClick={() => { setFormType("EXPENSE"); setSaleItems([]); setExtraCharges([]); setStockEntries([]); setShowStockLink(false); }}
             >
               Egreso
             </button>
@@ -399,6 +487,210 @@ function LedgerPage() {
             </div>
           </div>
 
+          {/* === INCOME: Sale items + extra charges === */}
+          {!editingId && formType === "INCOME" && (
+            <div className="ledger-stock-section">
+              <h3 className="ledger-section-title">Productos vendidos</h3>
+              <p className="ledger-stock-hint">
+                Detallá qué productos vendiste. Marcá "Descontar stock" solo si salen del mostrador.
+              </p>
+
+              {saleItems.map((si, idx) => (
+                <div key={idx} className="ledger-sale-row">
+                  <select
+                    value={si.stockItemId || ""}
+                    onChange={(e) => {
+                      const updated = [...saleItems];
+                      updated[idx] = { ...updated[idx], stockItemId: Number(e.target.value) };
+                      setSaleItems(updated);
+                    }}
+                  >
+                    <option value="">Seleccionar producto...</option>
+                    {productItems.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} ({p.unit}) — Stock: {Number(p.currentStock)}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    placeholder="Cant."
+                    value={si.quantity}
+                    onChange={(e) => {
+                      const updated = [...saleItems];
+                      updated[idx] = { ...updated[idx], quantity: e.target.value };
+                      setSaleItems(updated);
+                    }}
+                    className="ledger-sale-qty"
+                  />
+                  <label className="ledger-sale-deduct">
+                    <input
+                      type="checkbox"
+                      checked={si.deductStock}
+                      onChange={(e) => {
+                        const updated = [...saleItems];
+                        updated[idx] = { ...updated[idx], deductStock: e.target.checked };
+                        setSaleItems(updated);
+                      }}
+                    />
+                    Descontar stock
+                  </label>
+                  <button
+                    type="button"
+                    className="btn-danger-small"
+                    onClick={() => setSaleItems(saleItems.filter((_, i) => i !== idx))}
+                  >
+                    Quitar
+                  </button>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className="btn-secondary-small"
+                onClick={() => setSaleItems([...saleItems, { stockItemId: 0, quantity: "", deductStock: true }])}
+                style={{ marginTop: 8 }}
+              >
+                + Agregar producto
+              </button>
+
+              {/* Extra charges */}
+              <h3 className="ledger-section-title" style={{ marginTop: 16 }}>Cargos extra</h3>
+              <p className="ledger-stock-hint">
+                Cargos adicionales que no son productos (ej: envío, recargo tarjeta).
+              </p>
+
+              {extraCharges.map((ec, idx) => (
+                <div key={idx} className="ledger-stock-row">
+                  <input
+                    type="text"
+                    placeholder="Descripción (ej: Envío)"
+                    value={ec.description}
+                    onChange={(e) => {
+                      const updated = [...extraCharges];
+                      updated[idx] = { ...updated[idx], description: e.target.value };
+                      setExtraCharges(updated);
+                    }}
+                    style={{ flex: 2 }}
+                  />
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    placeholder="Monto"
+                    value={ec.amount}
+                    onChange={(e) => {
+                      const updated = [...extraCharges];
+                      updated[idx] = { ...updated[idx], amount: e.target.value };
+                      setExtraCharges(updated);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="btn-danger-small"
+                    onClick={() => setExtraCharges(extraCharges.filter((_, i) => i !== idx))}
+                  >
+                    Quitar
+                  </button>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className="btn-secondary-small"
+                onClick={() => setExtraCharges([...extraCharges, { description: "", amount: "" }])}
+                style={{ marginTop: 8 }}
+              >
+                + Agregar cargo
+              </button>
+            </div>
+          )}
+
+          {/* === EXPENSE: Stock linking === */}
+          {!editingId && formType === "EXPENSE" && (
+            <div className="ledger-stock-section">
+              <button
+                type="button"
+                className="ledger-stock-toggle"
+                onClick={() => setShowStockLink(!showStockLink)}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  style={{ transform: showStockLink ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+                Vincular con stock de materia prima
+                {stockEntries.length > 0 && (
+                  <span className="ledger-stock-badge">{stockEntries.length}</span>
+                )}
+              </button>
+
+              {showStockLink && (
+                <div className="ledger-stock-panel">
+                  <p className="ledger-stock-hint">
+                    Agregá los insumos que compraste para sumar al stock de materia prima.
+                  </p>
+
+                  {stockEntries.map((se, idx) => (
+                    <div key={idx} className="ledger-stock-row">
+                      <select
+                        value={se.stockItemId || ""}
+                        onChange={(e) => {
+                          const updated = [...stockEntries];
+                          updated[idx] = { ...updated[idx], stockItemId: Number(e.target.value) };
+                          setStockEntries(updated);
+                        }}
+                      >
+                        <option value="">Seleccionar item...</option>
+                        {rawMaterialItems.map((si) => (
+                          <option key={si.id} value={si.id}>
+                            {si.name} ({si.unit}) — Stock: {Number(si.currentStock)}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        placeholder="Cantidad"
+                        value={se.quantity}
+                        onChange={(e) => {
+                          const updated = [...stockEntries];
+                          updated[idx] = { ...updated[idx], quantity: e.target.value };
+                          setStockEntries(updated);
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="btn-danger-small"
+                        onClick={() => setStockEntries(stockEntries.filter((_, i) => i !== idx))}
+                      >
+                        Quitar
+                      </button>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    className="btn-secondary-small"
+                    onClick={() => setStockEntries([...stockEntries, { stockItemId: 0, quantity: "" }])}
+                    style={{ marginTop: 8 }}
+                  >
+                    + Agregar item
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {formError && <p className="error-message">{formError}</p>}
           <button type="submit" disabled={submitting}>
             {submitting ? "Guardando..." : editingId ? "Guardar cambios" : "Registrar movimiento"}
@@ -434,7 +726,24 @@ function LedgerPage() {
                       {entry.type === "INCOME" ? "Ingreso" : "Egreso"}
                     </span>
                   </td>
-                  <td className="ledger-desc-cell">{entry.description}</td>
+                  <td className="ledger-desc-cell">
+                    {entry.description}
+                    {entry.saleItems && entry.saleItems.length > 0 && (
+                      <div className="ledger-detail-tags">
+                        {entry.saleItems.map((si) => (
+                          <span key={si.id} className="ledger-detail-tag">
+                            {si.stockItem.name} x{Number(si.quantity)}
+                            {!si.deductStock && <span className="ledger-tag-encargo"> (encargo)</span>}
+                          </span>
+                        ))}
+                        {entry.extraCharges && entry.extraCharges.map((ec) => (
+                          <span key={ec.id} className="ledger-detail-tag ledger-tag-charge">
+                            {ec.description}: {formatCurrency(ec.amount)}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </td>
                   <td className="ledger-cat-cell">{entry.category || "—"}</td>
                   <td className={`ledger-amount-cell ${entry.type === "INCOME" ? "amount-income" : "amount-expense"}`}>
                     {entry.type === "INCOME" ? "+" : "−"} {formatCurrency(entry.amount)}
@@ -471,6 +780,21 @@ function LedgerPage() {
                   />
                 </div>
                 <p className="ledger-card-desc">{entry.description}</p>
+                {entry.saleItems && entry.saleItems.length > 0 && (
+                  <div className="ledger-detail-tags">
+                    {entry.saleItems.map((si) => (
+                      <span key={si.id} className="ledger-detail-tag">
+                        {si.stockItem.name} x{Number(si.quantity)}
+                        {!si.deductStock && <span className="ledger-tag-encargo"> (encargo)</span>}
+                      </span>
+                    ))}
+                    {entry.extraCharges && entry.extraCharges.map((ec) => (
+                      <span key={ec.id} className="ledger-detail-tag ledger-tag-charge">
+                        {ec.description}: {formatCurrency(ec.amount)}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <div className="ledger-card-bottom">
                   <span className={`ledger-card-amount ${entry.type === "INCOME" ? "amount-income" : "amount-expense"}`}>
                     {entry.type === "INCOME" ? "+" : "−"} {formatCurrency(entry.amount)}

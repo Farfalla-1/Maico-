@@ -1359,7 +1359,7 @@ button:disabled {
 /* Gallery */
 
 .gallery-v2 {
-  padding: 5rem 1.5rem;
+  padding: 4rem 1.5rem 2rem;
   max-width: 1100px;
   margin: 0 auto;
 }
@@ -1447,7 +1447,7 @@ button:disabled {
 /* Instagram */
 
 .instagram-v2 {
-  padding: 5rem 1.5rem;
+  padding: 2rem 1.5rem 4rem;
   background: rgba(187, 209, 165, 0.3);
   text-align: center;
 }
@@ -1546,7 +1546,7 @@ button:disabled {
   }
 
   .gallery-v2 {
-    padding: 3rem 1rem;
+    padding: 2.5rem 1rem 1.25rem;
   }
 
   .gallery-v2-grid {
@@ -1554,7 +1554,7 @@ button:disabled {
   }
 
   .instagram-v2 {
-    padding: 3rem 1rem;
+    padding: 1.25rem 1rem 2.5rem;
   }
 }
 
@@ -1564,7 +1564,7 @@ button:disabled {
   background: #5a5832;
   color: #e6d8c8;
   padding: 2rem 1.5rem 1rem;
-  margin-top: 2rem;
+  margin-top: 0;
 }
 
 .footer-content {
@@ -2248,4 +2248,356 @@ button:disabled {
 .fixed-cost-add {
   padding-top: 0.5rem;
   border-top: 1px solid #eee;
+}
+
+/* ===== STOCK PAGE ===== */
+
+.stock-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #c8b89a;
+}
+
+.stock-tab {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: #f5efe7;
+  color: #8b7355;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.stock-tab:hover {
+  background: #e6d8c8;
+}
+
+.stock-tab-active {
+  background: #5a5832;
+  color: #fff;
+}
+
+.stock-auto-hint {
+  font-size: 0.9rem;
+  color: #8b7355;
+  background: #f5efe7;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 3px solid #5a5832;
+  margin-bottom: 1rem;
+}
+
+.stock-qty {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.stock-qty-zero {
+  color: #c0392b;
+}
+
+/* Movement modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-wide {
+  max-width: 640px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* Movement type toggle */
+.stock-mov-type-toggle {
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #c8b89a;
+  margin-bottom: 0.5rem;
+}
+
+.stock-mov-btn {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #f5efe7;
+  color: #8b7355;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.stock-mov-btn-active.stock-mov-in {
+  background: #27ae60;
+  color: #fff;
+}
+
+.stock-mov-btn-active.stock-mov-out {
+  background: #c0392b;
+  color: #fff;
+}
+
+/* History */
+.stock-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.stock-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f9f6f1;
+  border-radius: 8px;
+  gap: 1rem;
+}
+
+.stock-history-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.stock-history-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  min-width: 60px;
+  text-align: center;
+}
+
+.stock-history-in {
+  background: #d5f5e3;
+  color: #1e8449;
+}
+
+.stock-history-out {
+  background: #fadbd8;
+  color: #c0392b;
+}
+
+.stock-history-reason {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.stock-history-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.stock-history-ledger {
+  font-size: 0.8rem;
+  color: #8b7355;
+  background: #f0e6d6;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.stock-history-date {
+  font-size: 0.8rem;
+  color: #888;
+  white-space: nowrap;
+}
+
+/* Ledger stock linking */
+.ledger-stock-section {
+  margin-top: 0.75rem;
+  border-top: 1px solid #eee;
+  padding-top: 0.75rem;
+}
+
+.ledger-stock-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #5a5832;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.ledger-stock-toggle:hover {
+  color: #3d3b22;
+}
+
+.ledger-stock-badge {
+  background: #5a5832;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+}
+
+.ledger-stock-panel {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: #f9f6f1;
+  border-radius: 8px;
+}
+
+.ledger-stock-hint {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.75rem;
+}
+
+.ledger-stock-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.ledger-stock-row select {
+  flex: 2;
+  padding: 0.5rem;
+  border: 1px solid #c8b89a;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.ledger-stock-row input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #c8b89a;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Ledger sale items */
+.ledger-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2a3a2a;
+  margin-bottom: 0.25rem;
+}
+
+.ledger-sale-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.ledger-sale-row select {
+  flex: 2;
+  padding: 0.5rem;
+  border: 1px solid #c8b89a;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.ledger-sale-qty {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #c8b89a;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.ledger-sale-deduct {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #555;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ledger-sale-deduct input[type="checkbox"] {
+  accent-color: #5a5832;
+}
+
+/* Detail tags on entries */
+.ledger-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.ledger-detail-tag {
+  display: inline-block;
+  font-size: 0.78rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.ledger-tag-encargo {
+  color: #8b7355;
+  font-style: italic;
+}
+
+.ledger-tag-charge {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+@media (max-width: 640px) {
+  .ledger-stock-row,
+  .ledger-sale-row {
+    flex-wrap: wrap;
+  }
+  .ledger-stock-row select,
+  .ledger-sale-row select {
+    flex: 1 1 100%;
+  }
+  .ledger-stock-row input {
+    flex: 1;
+  }
+  .ledger-sale-qty {
+    width: auto;
+    flex: 1;
+  }
+  .stock-history-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 }

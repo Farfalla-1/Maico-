@@ -11,6 +11,7 @@ import recipesRouter from "./modules/recipes/recipes.router.js";
 import calculatorRouter from "./modules/calculator/calculator.router.js";
 import fixedCostsRouter from "./modules/fixed-costs/fixed-costs.router.js";
 import ledgerRouter from "./modules/ledger/ledger.router.js";
+import stockRouter from "./modules/stock/stock.router.js";
 
 // Ensure types are loaded
 import "./common/types.js";
@@ -44,6 +45,7 @@ app.use("/api/recipes", recipesRouter);
 app.use("/api/calculator", calculatorRouter);
 app.use("/api/fixed-costs", fixedCostsRouter);
 app.use("/api/ledger", ledgerRouter);
+app.use("/api/stock", stockRouter);
 
 // Health check
 app.get("/api/health", (_req, res) => {

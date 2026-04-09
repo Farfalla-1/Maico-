@@ -323,6 +323,20 @@ export async function deleteFixedCost(id: number): Promise<void> {
 
 export type LedgerType = "INCOME" | "EXPENSE";
 
+export interface LedgerSaleItem {
+  id: number;
+  stockItemId: number;
+  quantity: string;
+  deductStock: boolean;
+  stockItem: StockItem;
+}
+
+export interface LedgerExtraCharge {
+  id: number;
+  description: string;
+  amount: string;
+}
+
 export interface LedgerEntry {
   id: number;
   type: LedgerType;
@@ -330,6 +344,8 @@ export interface LedgerEntry {
   amount: string;
   date: string;
   category: string | null;
+  saleItems?: LedgerSaleItem[];
+  extraCharges?: LedgerExtraCharge[];
   createdAt: string;
   updatedAt: string;
 }
@@ -388,6 +404,9 @@ export async function createLedgerEntry(data: {
   amount: number;
   date: string;
   category?: string;
+  stockMovements?: { stockItemId: number; quantity: number }[];
+  saleItems?: { stockItemId: number; quantity: number; deductStock: boolean }[];
+  extraCharges?: { description: string; amount: number }[];
 }): Promise<LedgerEntry> {
   const res = await apiFetch<LedgerEntryResponse>("/ledger", {
     method: "POST",
@@ -415,6 +434,116 @@ export async function updateLedgerEntry(
 
 export async function deleteLedgerEntry(id: number): Promise<void> {
   await apiFetch<unknown>(`/ledger/${id}`, { method: "DELETE" });
+}
+
+// Stock
+
+export type StockType = "RAW_MATERIAL" | "FINISHED_PRODUCT";
+export type MovementType = "IN" | "OUT";
+
+export interface StockItem {
+  id: number;
+  type: StockType;
+  name: string;
+  ingredientId: number | null;
+  unit: string;
+  currentStock: string;
+  ingredient: Ingredient | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StockMovement {
+  id: number;
+  stockItemId: number;
+  movementType: MovementType;
+  quantity: string;
+  reason: string;
+  ledgerEntryId: number | null;
+  ledgerEntry: LedgerEntry | null;
+  createdAt: string;
+}
+
+export interface StockItemDetail extends StockItem {
+  movements: StockMovement[];
+}
+
+interface StockItemsResponse {
+  status: string;
+  data: StockItem[];
+}
+
+interface StockItemResponse {
+  status: string;
+  data: StockItemDetail;
+}
+
+interface StockMovementResponse {
+  status: string;
+  data: StockMovement;
+}
+
+interface StockMovementsResponse {
+  status: string;
+  data: StockMovement[];
+}
+
+export async function getStockItems(type?: StockType): Promise<StockItem[]> {
+  const query = new URLSearchParams();
+  if (type) query.set("type", type);
+  const qs = query.toString();
+  const res = await apiFetch<StockItemsResponse>(`/stock${qs ? `?${qs}` : ""}`);
+  return res.data;
+}
+
+export async function getStockItem(id: number): Promise<StockItemDetail> {
+  const res = await apiFetch<StockItemResponse>(`/stock/${id}`);
+  return res.data;
+}
+
+export async function createStockItem(data: {
+  type: StockType;
+  name: string;
+  ingredientId?: number;
+  unit: string;
+  currentStock?: number;
+}): Promise<StockItem> {
+  const res = await apiFetch<{ status: string; data: StockItem }>("/stock", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function updateStockItem(
+  id: number,
+  data: { name?: string; unit?: string }
+): Promise<StockItem> {
+  const res = await apiFetch<{ status: string; data: StockItem }>(`/stock/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function deleteStockItem(id: number): Promise<void> {
+  await apiFetch<unknown>(`/stock/${id}`, { method: "DELETE" });
+}
+
+export async function addStockMovement(
+  stockItemId: number,
+  data: { movementType: MovementType; quantity: number; reason: string }
+): Promise<StockMovement> {
+  const res = await apiFetch<StockMovementResponse>(`/stock/${stockItemId}/movements`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function getStockMovements(stockItemId: number): Promise<StockMovement[]> {
+  const res = await apiFetch<StockMovementsResponse>(`/stock/${stockItemId}/movements`);
+  return res.data;
 }
 
 // Calculator

@@ -22,12 +22,26 @@ export async function getById(id: number) {
 }
 
 export async function create(data: CreateIngredientInput) {
-  return prisma.ingredient.create({
-    data: {
-      name: data.name,
-      unit: data.unit,
-      price: data.price,
-    },
+  return prisma.$transaction(async (tx) => {
+    const ingredient = await tx.ingredient.create({
+      data: {
+        name: data.name,
+        unit: data.unit,
+        price: data.price,
+      },
+    });
+
+    await tx.stockItem.create({
+      data: {
+        type: "RAW_MATERIAL",
+        name: ingredient.name,
+        ingredientId: ingredient.id,
+        unit: ingredient.unit,
+        currentStock: 0,
+      },
+    });
+
+    return ingredient;
   });
 }
 
@@ -50,7 +64,7 @@ export async function update(id: number, data: UpdateIngredientInput) {
       });
     }
 
-    return tx.ingredient.update({
+    const updated = await tx.ingredient.update({
       where: { id },
       data: {
         ...(data.name !== undefined && { name: data.name }),
@@ -58,6 +72,19 @@ export async function update(id: number, data: UpdateIngredientInput) {
         ...(data.price !== undefined && { price: data.price }),
       },
     });
+
+    // Keep StockItem in sync
+    if (data.name !== undefined || data.unit !== undefined) {
+      await tx.stockItem.updateMany({
+        where: { type: "RAW_MATERIAL", ingredientId: id },
+        data: {
+          ...(data.name !== undefined && { name: data.name }),
+          ...(data.unit !== undefined && { unit: data.unit }),
+        },
+      });
+    }
+
+    return updated;
   });
 }
 

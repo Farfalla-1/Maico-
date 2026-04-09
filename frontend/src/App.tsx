@@ -9,6 +9,7 @@ import RecipeFormPage from "./pages/RecipeFormPage";
 import CalculatorPage from "./pages/CalculatorPage";
 import UsersPage from "./pages/UsersPage";
 import LedgerPage from "./pages/LedgerPage";
+import StockPage from "./pages/StockPage";
 import "./App.css";
 import { ReactNode, useState, useEffect, useRef } from "react";
 
@@ -79,6 +80,7 @@ function AppLayout() {
               <Link to="/ingredients">Ingredientes</Link>
               <Link to="/recipes">Recetas</Link>
               <Link to="/calculator">Calculadora</Link>
+              <Link to="/stock">Stock</Link>
               {isAdmin && <Link to="/ledger">Libro de Caja</Link>}
               {isAdmin && <Link to="/users">Usuarios</Link>}
               <button onClick={handleLogout} className="nav-logout">
@@ -101,6 +103,7 @@ function AppLayout() {
           <Route path="/recipes/:id" element={<ProtectedRoute><RecipeDetailPage /></ProtectedRoute>} />
           <Route path="/recipes" element={<ProtectedRoute><RecipesPage /></ProtectedRoute>} />
           <Route path="/calculator" element={<ProtectedRoute><CalculatorPage /></ProtectedRoute>} />
+          <Route path="/stock" element={<ProtectedRoute><StockPage /></ProtectedRoute>} />
           <Route
             path="/ledger"
             element={

@@ -21,19 +21,138 @@ export async function getAll(filters?: { month?: number; year?: number; type?: s
 
   return prisma.ledgerEntry.findMany({
     where,
+    include: {
+      saleItems: { include: { stockItem: true } },
+      extraCharges: true,
+    },
     orderBy: { date: "desc" },
   });
 }
 
 export async function create(data: CreateLedgerEntryInput) {
-  return prisma.ledgerEntry.create({
-    data: {
-      type: data.type,
-      description: data.description,
-      amount: data.amount,
-      date: new Date(data.date),
-      category: data.category ?? null,
-    },
+  const hasStockMovements = data.stockMovements && data.stockMovements.length > 0;
+  const hasSaleItems = data.saleItems && data.saleItems.length > 0;
+  const hasExtraCharges = data.extraCharges && data.extraCharges.length > 0;
+
+  // Simple case: no linked items
+  if (!hasStockMovements && !hasSaleItems && !hasExtraCharges) {
+    return prisma.ledgerEntry.create({
+      data: {
+        type: data.type,
+        description: data.description,
+        amount: data.amount,
+        date: new Date(data.date),
+        category: data.category ?? null,
+      },
+      include: {
+        saleItems: { include: { stockItem: true } },
+        extraCharges: true,
+      },
+    });
+  }
+
+  return prisma.$transaction(async (tx) => {
+    const entry = await tx.ledgerEntry.create({
+      data: {
+        type: data.type,
+        description: data.description,
+        amount: data.amount,
+        date: new Date(data.date),
+        category: data.category ?? null,
+      },
+    });
+
+    // EXPENSE: stock movements IN (bought supplies)
+    if (hasStockMovements) {
+      for (const sm of data.stockMovements!) {
+        const stockItem = await tx.stockItem.findUnique({ where: { id: sm.stockItemId } });
+        if (!stockItem) {
+          throw new AppError(`Stock item ${sm.stockItemId} not found`, 404);
+        }
+
+        const newStock = Number(stockItem.currentStock) + sm.quantity;
+
+        await tx.stockMovement.create({
+          data: {
+            stockItemId: sm.stockItemId,
+            movementType: "IN",
+            quantity: sm.quantity,
+            reason: "Compra",
+            ledgerEntryId: entry.id,
+          },
+        });
+
+        await tx.stockItem.update({
+          where: { id: sm.stockItemId },
+          data: { currentStock: newStock },
+        });
+      }
+    }
+
+    // INCOME: sale items (products sold, optionally deduct stock)
+    if (hasSaleItems) {
+      for (const si of data.saleItems!) {
+        const stockItem = await tx.stockItem.findUnique({ where: { id: si.stockItemId } });
+        if (!stockItem) {
+          throw new AppError(`Stock item ${si.stockItemId} not found`, 404);
+        }
+
+        // Save the sale item record (always, for metrics)
+        await tx.ledgerSaleItem.create({
+          data: {
+            ledgerEntryId: entry.id,
+            stockItemId: si.stockItemId,
+            quantity: si.quantity,
+            deductStock: si.deductStock,
+          },
+        });
+
+        // Only deduct stock if checked
+        if (si.deductStock) {
+          const newStock = Number(stockItem.currentStock) - si.quantity;
+
+          if (newStock < 0) {
+            throw new AppError(`Stock insuficiente para "${stockItem.name}"`, 400);
+          }
+
+          await tx.stockMovement.create({
+            data: {
+              stockItemId: si.stockItemId,
+              movementType: "OUT",
+              quantity: si.quantity,
+              reason: "Venta",
+              ledgerEntryId: entry.id,
+            },
+          });
+
+          await tx.stockItem.update({
+            where: { id: si.stockItemId },
+            data: { currentStock: newStock },
+          });
+        }
+      }
+    }
+
+    // Extra charges (e.g., delivery)
+    if (hasExtraCharges) {
+      for (const ec of data.extraCharges!) {
+        await tx.ledgerExtraCharge.create({
+          data: {
+            ledgerEntryId: entry.id,
+            description: ec.description,
+            amount: ec.amount,
+          },
+        });
+      }
+    }
+
+    return tx.ledgerEntry.findUnique({
+      where: { id: entry.id },
+      include: {
+        saleItems: { include: { stockItem: true } },
+        extraCharges: true,
+      },
+    });
   });
 }
 

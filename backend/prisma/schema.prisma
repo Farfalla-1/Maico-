@@ -39,6 +39,7 @@ model Ingredient {
   updatedAt    DateTime           @updatedAt
   priceHistory PriceHistory[]
   recipes      RecipeIngredient[]
+  stockItems   StockItem[]
 }
 
 model PriceHistory {
@@ -58,6 +59,7 @@ model Recipe {
   yieldUnit   String
   ingredients RecipeIngredient[]
   steps       RecipeStep[]
+  stockItems  StockItem[]
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
 }
@@ -85,15 +87,46 @@ enum LedgerType {
   EXPENSE
 }
 
+enum StockType {
+  RAW_MATERIAL
+  FINISHED_PRODUCT
+}
+
+enum MovementType {
+  IN
+  OUT
+}
+
 model LedgerEntry {
-  id          Int        @id @default(autoincrement())
-  type        LedgerType
-  description String
-  amount      Decimal
-  date        DateTime
-  category    String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id             Int                @id @default(autoincrement())
+  type           LedgerType
+  description    String
+  amount         Decimal
+  date           DateTime
+  category       String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  stockMovements StockMovement[]
+  saleItems      LedgerSaleItem[]
+  extraCharges   LedgerExtraCharge[]
+}
+
+model LedgerSaleItem {
+  id            Int         @id @default(autoincrement())
+  ledgerEntryId Int
+  stockItemId   Int
+  quantity      Decimal
+  deductStock   Boolean     @default(true)
+  ledgerEntry   LedgerEntry @relation(fields: [ledgerEntryId], references: [id], onDelete: Cascade)
+  stockItem     StockItem   @relation(fields: [stockItemId], references: [id])
+}
+
+model LedgerExtraCharge {
+  id            Int         @id @default(autoincrement())
+  ledgerEntryId Int
+  description   String
+  amount        Decimal
+  ledgerEntry   LedgerEntry @relation(fields: [ledgerEntryId], references: [id], onDelete: Cascade)
 }
 
 model RecipeIngredient {
@@ -106,4 +139,35 @@ model RecipeIngredient {
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
 
   @@unique([recipeId, ingredientId])
+}
+
+model StockItem {
+  id           Int             @id @default(autoincrement())
+  type         StockType
+  name         String
+  ingredientId Int?
+  recipeId     Int?
+  unit         String
+  currentStock Decimal         @default(0)
+  ingredient   Ingredient?     @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  recipe       Recipe?         @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  movements    StockMovement[]
+  saleItems    LedgerSaleItem[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@unique([type, ingredientId])
+  @@unique([type, recipeId])
+}
+
+model StockMovement {
+  id            Int          @id @default(autoincrement())
+  stockItemId   Int
+  movementType  MovementType
+  quantity      Decimal
+  reason        String
+  ledgerEntryId Int?
+  stockItem     StockItem    @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
+  ledgerEntry   LedgerEntry? @relation(fields: [ledgerEntryId], references: [id], onDelete: SetNull)
+  createdAt     DateTime     @default(now())
 }
